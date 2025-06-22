@@ -2,7 +2,7 @@
 <html lang="he">
 <head>
   <meta charset="UTF-8" />
-  <title>ברבי בדרך לעבודה!</title>
+  <title>BARBIE ON HER WAY TO WORK!</title>
   <style>
     body {
       background: #ffe6f0;
@@ -22,7 +22,7 @@
   </style>
 </head>
 <body>
-  <h1>ברבי בדרך לעבודה!</h1>
+  <h1>BARBIE ON HER WAY TO WORK!</h1>
   <canvas id="game" width="320" height="320"></canvas>
 
   <script>
@@ -110,7 +110,7 @@
         if (levelMap[newY][newX] === 2) pizzas--;
         if (levelMap[newY][newX] === 3) foxes--;
         if (levelMap[newY][newX] === 4 && pizzas === 0 && foxes === 0) {
-          alert("ברבי הצליחה להגיע לעבודה! 🎉");
+          alert("YOU MADE IT! 🎉");
           location.reload();
         }
         levelMap[newY][newX] = 0;
