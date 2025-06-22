@@ -6,15 +6,15 @@
   <style>
     body {
       background: #ffe6f0;
-      font-family: sans-serif;
       text-align: center;
+      font-family: sans-serif;
       margin: 0;
     }
     canvas {
       background: #fff0f5;
       display: block;
       margin: 0 auto;
-      border: 5px solid #ff69b4;
+      border: 4px solid #ff69b4;
     }
     h1 {
       color: #d63384;
@@ -30,37 +30,7 @@
     const ctx = canvas.getContext("2d");
 
     const tileSize = 32;
-    const rows = 10;
-    const cols = 10;
-
-    const maze = [
-      [1,1,1,1,1,1,1,1,1,1],
-      [1,0,0,0,1,0,0,0,0,1],
-      [1,0,1,0,1,0,1,1,0,1],
-      [1,🍕,1,0,0,0,0,1,0,1],
-      [1,0,1,1,1,1,0,1,0,1],
-      [1,0,0,0,🦊,1,0,1,0,1],
-      [1,1,1,0,1,1,0,1,0,1],
-      [1,0,0,0,1,0,0,1,0,🚪],
-      [1,0,1,1,1,1,1,1,0,1],
-      [1,1,1,1,1,1,1,1,1,1],
-    ];
-
-    const TILE_EMPTY = 0;
-    const TILE_WALL = 1;
-    const TILE_PIZZA = 2;
-    const TILE_FOX = 3;
-    const TILE_EXIT = 4;
-
-    const emojiMap = {
-      0: "",
-      1: "#",
-      2: "🍕",
-      3: "🦊",
-      4: "🚪",
-    };
-
-    const levelMap = [
+    const map = [
       [1,1,1,1,1,1,1,1,1,1],
       [1,0,0,0,1,0,0,0,0,1],
       [1,0,1,0,1,0,1,1,0,1],
@@ -77,47 +47,63 @@
     let pizzas = 1;
     let foxes = 1;
 
+    function drawTile(x, y, type) {
+      if (type === 1) {
+        ctx.fillStyle = "#ff69b4"; // wall
+        ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+      } else if (type === 2) {
+        ctx.fillStyle = "gold"; // pizza
+        ctx.beginPath();
+        ctx.arc(x * tileSize + 16, y * tileSize + 16, 10, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (type === 3) {
+        ctx.fillStyle = "orange"; // fox
+        ctx.beginPath();
+        ctx.arc(x * tileSize + 16, y * tileSize + 16, 10, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (type === 4) {
+        ctx.fillStyle = "green"; // exit
+        ctx.beginPath();
+        ctx.arc(x * tileSize + 16, y * tileSize + 16, 10, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = "#ff1493"; // pink
+      ctx.fillRect(player.x * tileSize + 4, player.y * tileSize + 4, 24, 24);
+    }
+
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-          let tile = levelMap[y][x];
-          ctx.strokeStyle = "#ccc";
-          ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
-
-          if (tile === 1) {
-            ctx.fillStyle = "#ff69b4";
-            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-          } else if (tile === 2) {
-            ctx.fillText("🍕", x * tileSize + 8, y * tileSize + 24);
-          } else if (tile === 3) {
-            ctx.fillText("🦊", x * tileSize + 8, y * tileSize + 24);
-          } else if (tile === 4) {
-            ctx.fillText("🚪", x * tileSize + 8, y * tileSize + 24);
-          }
+      for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < 10; x++) {
+          drawTile(x, y, map[y][x]);
         }
       }
-
-      ctx.fillText("💖", player.x * tileSize + 8, player.y * tileSize + 24);
+      drawPlayer();
     }
 
     function move(dx, dy) {
       const newX = player.x + dx;
       const newY = player.y + dy;
-
-      if (levelMap[newY][newX] !== 1) {
-        if (levelMap[newY][newX] === 2) pizzas--;
-        if (levelMap[newY][newX] === 3) foxes--;
-        if (levelMap[newY][newX] === 4 && pizzas === 0 && foxes === 0) {
-          alert("ברבי הצליחה להגיע לעבודה! 🎉");
-          location.reload();
+      if (map[newY][newX] !== 1) {
+        if (map[newY][newX] === 2) pizzas--;
+        if (map[newY][newX] === 3) foxes--;
+        if (map[newY][newX] === 4) {
+          if (pizzas <= 0 && foxes <= 0) {
+            alert("ברבי הצליחה להגיע לעבודה! 🎉");
+            location.reload();
+          } else {
+            alert("אספי את כל הפיצות וחבקי את כל השועלים קודם!");
+            return;
+          }
         }
-        levelMap[newY][newX] = 0;
+        map[newY][newX] = 0;
         player.x = newX;
         player.y = newY;
+        draw();
       }
-      draw();
     }
 
     document.addEventListener("keydown", (e) => {
